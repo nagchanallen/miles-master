@@ -7,7 +7,7 @@ Use Node.js 24.14.0 (see `.nvmrc`) and pnpm 10.34.7. Run `corepack enable pnpm` 
 1. Describe the user-visible behavior in a failing test. Use `src/domain/model.test.ts` for calculations and backup rules, `src/storage.test.ts` for persistence failures, and React Testing Library for user interactions.
 2. Run the focused test and verify it fails for the intended reason: `pnpm test src/domain/model.test.ts`.
 3. Implement the smallest complete change that makes the test pass.
-4. Refactor while keeping the tests green. Prefer pure domain functions and small UI components. Keep display strings in both locale JSON files.
+4. Refactor while keeping the tests green. Prefer pure domain functions and small UI components. Keep display strings in all locale JSON files.
 5. Run `pnpm run format`, then `pnpm run check` before committing. This checks formatting, TypeScript, tests, coverage, and the production build.
 
 Use `pnpm run test:watch` for the red/green/refactor loop. Test behavior and edge cases rather than snapshots of implementation structure. The configured coverage thresholds apply to domain logic and storage; React interaction tests run too, but those modules are not included in the coverage percentage.
@@ -41,4 +41,4 @@ Copilot review instructions live in `.github/copilot-instructions.md`. GitHub Co
 
 ## Manual browser checks
 
-Open the app with `pnpm run dev`. Check Japanese and English at 375px and 1440px widths. Confirm that comparison cards stack on phones, multiple options remain usable on desktop, keyboard focus is visible, and no page-wide horizontal scrolling appears. Validate export/import and reload persistence in a real browser before a release. DOM tests do not verify visual layout.
+Open the app with `pnpm run dev`. Check Japanese, English, and Hong Kong Traditional Chinese (`zh-HK`) at 375px and 1440px widths. Confirm that comparison cards stack on phones, multiple options remain usable on desktop, keyboard focus is visible, and no page-wide horizontal scrolling appears. Validate export/import and reload persistence in a real browser before a release. DOM tests do not verify visual layout.

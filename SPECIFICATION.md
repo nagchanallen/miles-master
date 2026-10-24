@@ -2,7 +2,7 @@
 
 ## Purpose and platform
 
-A frontend-only app answering: “For this trip, should I pay cash or redeem miles?” Each comparison pairs a cash ticket with an award ticket that serves the same trip; the flights may differ. JAL and ANA identify the award program used for valuation, rather than being the primary comparison axis. React 18, TypeScript, and Vite with Semantic UI React. Japanese and English interfaces use i18next/react-i18next; JPY only. Language strings and currency formatting are centralized for future expansion. Cloudflare Workers Static Assets is prepared for free static hosting; actual deployment is deferred. The build also supports GitHub Pages and other static hosts. No backend, account system, or external fare lookup.
+A frontend-only app answering: “For this trip, should I pay cash or redeem miles?” Each comparison pairs a cash ticket with an award ticket that serves the same trip; the flights may differ. JAL and ANA identify the award program used for valuation, rather than being the primary comparison axis. React 18, TypeScript, and Vite with Semantic UI React. Japanese, English, and Hong Kong Traditional Chinese (`zh-HK`) interfaces use i18next/react-i18next; JPY only. Language strings and currency formatting are centralized for future expansion. Cloudflare Workers Static Assets is prepared for free static hosting; actual deployment is deferred. The build also supports GitHub Pages and other static hosts. No backend, account system, or external fare lookup.
 
 ## Scope
 

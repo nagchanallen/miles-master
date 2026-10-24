@@ -1,12 +1,12 @@
 # Miles Master
 
-A responsive frontend app that helps you decide whether to pay cash or redeem miles for a trip. Compare different flights serving the same trip, with independent details for the cash and award alternatives. Includes fuel surcharges, taxes, and fees; Japanese and English interfaces; JPY pricing; and local browser storage with JSON backup/import.
+A responsive frontend app that helps you decide whether to pay cash or redeem miles for a trip. Compare different flights serving the same trip, with independent details for the cash and award alternatives. Includes fuel surcharges, taxes, and fees; Japanese, English, and Hong Kong Traditional Chinese (`zh-HK`) interfaces; JPY pricing; and local browser storage with JSON backup/import.
 
 ## Stack
 
 - React 18 + TypeScript + Vite
 - Semantic UI React and Semantic UI CSS
-- i18next + react-i18next, with `src/locales/ja.json` and `src/locales/en.json`
+- i18next + react-i18next, with `src/locales/ja.json`, `src/locales/en.json`, and `src/locales/zh-HK.json`
 - Vitest + React Testing Library for test-driven development
 - GitHub Actions for validation; Cloudflare Workers Static Assets prepared for later hosting
 
@@ -50,7 +50,7 @@ JAL and ANA each have independent domestic and international targets. Only the a
 
 Comparisons, targets, and language are saved under `miles-master.v1` in localStorage. Data belongs to the current browser and origin. Clearing site data removes it; use Export backup for JSON backups and moving data between localhost and a hosted domain. Export uses schema version 2 with separate flight details. Import validates the file before asking to replace current data and also upgrades version 1 backups. Existing saved browser data is upgraded automatically, preserving the old shared labels on both alternatives. Corrupt saved data can be downloaded for recovery.
 
-Add interface strings to both locale files. Tests check key and placeholder parity. JPY formatting is locale-aware; adding other currencies and conversion is a future feature.
+Add interface strings to all locale files. Tests check key and placeholder parity. JPY formatting is locale-aware; adding other currencies and conversion is a future feature.
 
 ## CI and reviews
 
