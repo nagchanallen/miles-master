@@ -16,7 +16,13 @@ A frontend-only app answering: “For this trip, should I pay cash or redeem mil
 
 ## Target values
 
-Four independently editable values: JAL domestic, JAL international, ANA domestic, ANA international. Proposed initial examples are ¥1.50/mile for domestic and ¥2.00/mile for international, for each airline. They are illustrative defaults, not market valuations. Positive targets up to ¥10,000/mile are accepted in increments of ¥0.01.
+Twelve independently editable values: economy, business, and first class within each airline and domestic/international category. Initial thresholds are ¥2 / ¥4 / ¥6 per mile respectively. The required award cabin selector determines the target; optional cabin labels do not. Existing targets remain unchanged on migration, with a button to apply the new defaults. They are illustrative defaults, not market valuations. Positive targets up to ¥10,000/mile are accepted in increments of ¥0.01.
+
+## Optional chart lookup
+
+Bundle a dated, sourced reference dataset for direct international flights between Tokyo and Hong Kong, Singapore, Honolulu, Sydney, London, or New York. Support either direction and one-way or same-cabin round-trips. Use JAL base miles; first class is seasonal. ANA requires seasons; sum the published one-way amounts for independently selected outbound and return seasons. The user checks each date against the linked official chart and selects seasons manually. ANA first-class lookup initially covers Honolulu, London, and New York only.
+
+Require an explicit apply action to fill the editable miles field and award route label. Changes to lookup controls do not replace previously entered miles. Unsupported cities/cabins, domestic routes, premium economy, and connecting flights require manual mileage entry. Show source links, a verification date (2026-10-24), and that the dataset is not a live booking quote or availability check. Keep surcharges and taxes manual. Source and maintenance details are in README.md.
 
 ## Inputs and fees
 
@@ -33,13 +39,13 @@ Award cash charges support either one total or a breakdown of fuel surcharge, ta
 - Equal values: neutral result, using a ¥0.005 comparison tolerance for floating-point arithmetic.
 - Signed valuation difference = cash fare − break-even cash fare. A positive difference favors miles; a negative difference favors cash. Display its absolute amount with up to two decimal places and the winning payment method, so sub-yen differences do not appear as zero; omit the amount for equal or incomplete alternatives. This is not literal cash savings.
 
-Without a cash fare, show the estimated ticket value and omit actual value and recommendation. Without valid miles or complete fees, show incomplete results. Negative actual values remain visible when award charges exceed the cash fare. Display values per mile to two decimal places and ticket prices to whole yen; compare using unrounded values. Recommendations reflect only the user's target and entered prices. Explain that times, airports, cabins, baggage, and flexibility may differ and are not priced by the calculator. Changing the cash airline never changes the mileage target; changing the award airline or domestic/international category does.
+Without a cash fare, show the estimated ticket value and omit actual value and recommendation. Without valid miles or complete fees, show incomplete results. Negative actual values remain visible when award charges exceed the cash fare. Display values per mile to two decimal places and ticket prices to whole yen; compare using unrounded values. Recommendations reflect only the user's target and entered prices. Explain that times, airports, cabins, baggage, and flexibility may differ and are not priced by the calculator. Changing the cash airline never changes the mileage target; changing the award airline, domestic/international category, or award cabin does.
 
 ## Persistence and backups
 
 Auto-save valid changes under `miles-master.v1` in localStorage. Save language, targets, comparison groups, options, and active comparison. Data is specific to the browser and site origin. Storage failures must be visible and must not prevent in-memory use or export.
 
-JSON export contains schema `version: 2` and the complete saved state, including `cashAirline`, `cashFlight`, and `awardFlight`. Both flight-detail objects contain route, flight numbers, departure, return, and cabin. Import also accepts version 1: its shared labels are copied into two independent detail objects, cash airline remains unspecified, and prices and targets are preserved. The original localStorage key is retained so existing browser data migrates automatically. Import validates version, enumerations, amounts, target values, identifiers, and limits before asking to replace current data. Unsupported files leave current state intact. Maximum import size is 5 MiB; up to 100 groups and 100 options per group. Reject duplicate group IDs or duplicate option IDs within a group. Discard unknown fields. Imported text is escaped when rendered.
+JSON export contains schema `version: 3` and the complete saved state, including `cashAirline`, `cashFlight`, and `awardFlight`. Both flight-detail objects contain route, flight numbers, departure, return, and cabin. The state also includes award cabin and lookup city/season selections. Import also accepts versions 1 and 2, copying each numeric target to all three cabins and setting the target cabin to economy. For version 1: its shared labels are copied into two independent detail objects, cash airline remains unspecified, and prices and targets are preserved. The original localStorage key is retained so existing browser data migrates automatically. Import validates version, enumerations, amounts, target values, identifiers, and limits before asking to replace current data. Unsupported files leave current state intact. Maximum import size is 5 MiB; up to 100 groups and 100 options per group. Reject duplicate group IDs or duplicate option IDs within a group. Discard unknown fields. Imported text is escaped when rendered.
 
 Unreadable local data is preserved until an explicit reset or import. Offer a recovery download rather than automatically overwriting it. Confirm destructive option/group deletion, backup replacement, and storage reset. Deleting the final group creates a new empty comparison.
 
@@ -55,8 +61,8 @@ Comparison pairs appear vertically within a trip. Each pair prominently displays
 4. Reload retains comparisons and targets; exporting and importing reproduces that state.
 5. Switching award airline or domestic/international updates the applicable target and results; changing cash airline does not.
 6. An ANA cash flight from HND and a JAL award flight from NRT can be entered independently for the same trip; both sets of labels survive reload and backup/import.
-7. A version 1 backup retains its fares, targets, and labels when upgraded to version 2.
-8. Both interfaces work at narrow phone and wide desktop widths.
+7. A version 1 backup retains its fares, targets, and labels when upgraded to version 3.
+8. All three interfaces work at narrow phone and wide desktop widths.
 
 ## Future extensions
 
