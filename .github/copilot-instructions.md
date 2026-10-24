@@ -12,7 +12,7 @@ When reviewing changes:
 - Preserve schema-versioned localStorage data and validated JSON backups. Corrupt stored data must remain recoverable. Imported labels must never be injected as HTML.
 - Check that Japanese and English translations have matching keys and interpolation placeholders, and that added controls have accessible labels.
 - Review both phone and desktop layouts. Avoid introducing a backend, API secrets, currency conversion, live fare scraping, or partner-airline logic into version 1.
-- Expect behavior tests before fixes/features, then passing `npm run check`. Do not replace tests with assertions that merely mirror implementation details.
+- Expect behavior tests before fixes/features, then passing `pnpm run check`. Do not replace tests with assertions that merely mirror implementation details.
 - Preserve React 18 compatibility with Semantic UI React 2.x; do not bypass peer dependencies with `--force` or `--legacy-peer-deps`.
 - Deployment is a manual action. Ordinary pull requests and pushes must not publish the app.
 

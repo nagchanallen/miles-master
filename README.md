@@ -16,19 +16,20 @@ React 18 matches Semantic UI React's supported peer dependencies. All calculatio
 
 ```sh
 nvm use
-npm ci
-npm run dev
+corepack enable pnpm
+pnpm install --frozen-lockfile
+pnpm run dev
 ```
 
-Open the local URL printed by Vite. Use Node.js 24.14.0 or newer; `.nvmrc` pins the development and CI version. `npm start` is an alias for the development server.
+Open the local URL printed by Vite. Use Node.js 24.14.0 or newer; `.nvmrc` pins the development and CI version. The `packageManager` field pins pnpm 10.34.7; Corepack selects it after `nvm use` and `corepack enable pnpm`. `pnpm start` is an alias for the development server.
 
 ```sh
-npm run test:watch     # TDD loop
-npm test              # All tests once
-npm run test:coverage # Domain/storage coverage plus UI tests
-npm run format        # Format source and documentation
-npm run check         # Formatting, types, tests, coverage, production build
-npm run preview       # Serve the built dist/ directory
+pnpm run test:watch     # TDD loop
+pnpm test              # All tests once
+pnpm run test:coverage # Domain/storage coverage plus UI tests
+pnpm run format        # Format source and documentation
+pnpm run check         # Formatting, types, tests, coverage, production build
+pnpm run preview       # Serve the built dist/ directory
 ```
 
 Read [SPECIFICATION.md](./SPECIFICATION.md) for product requirements and [CONTRIBUTING.md](./CONTRIBUTING.md) for the development and review workflow.
@@ -60,14 +61,14 @@ Add interface strings to both locale files. Tests check key and placeholder pari
 Nothing is deployed automatically on push. When ready:
 
 1. Review the Worker name `miles-master` in `wrangler.jsonc`.
-2. Run `npm run deploy:dry-run` to validate packaging without publishing.
-3. Run `npx wrangler login` to authenticate locally, then `npm run deploy`. This checks and builds the app before publication to your Cloudflare account.
+2. Run `pnpm run deploy:dry-run` to validate packaging without publishing.
+3. Run `pnpm exec wrangler login` to authenticate locally, then `pnpm run deploy`. This checks and builds the app before publication to your Cloudflare account.
 
 Alternatively, create the GitHub `production` environment and add `CLOUDFLARE_ACCOUNT_ID` and a scoped `CLOUDFLARE_API_TOKEN` as environment secrets. The token needs permission to deploy Workers in the selected account. Run the **Deploy to Cloudflare** workflow manually from `main`. It validates the app before deploying; it never runs for an ordinary push or pull request. Do not put tokens in Vite variables or source files. See [Cloudflare's GitHub Actions guide](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/) for token setup.
 
 ## Other static hosts
 
-`npm run build` produces `dist/`, which also works on Cloudflare Pages or GitHub Pages. Asset paths are relative. For Cloudflare Pages, use `npm run build` and the `dist` output directory with Node 24.14.0. GitHub Pages requires publishing the built `dist/` contents, not serving the TypeScript source directory. A `.nojekyll` file is included in the output.
+`pnpm run build` produces `dist/`, which also works on Cloudflare Pages or GitHub Pages. Asset paths are relative. For Cloudflare Pages, use `pnpm run build` and the `dist` output directory with Node 24.14.0. GitHub Pages requires publishing the built `dist/` contents, not serving the TypeScript source directory. A `.nojekyll` file is included in the output.
 
 ## License
 
