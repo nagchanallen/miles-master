@@ -1,0 +1,7 @@
+overrides:
+  undici: ^7.30.1
+
+allowBuilds:
+  esbuild: true
+  fsevents: true
+  workerd: true
