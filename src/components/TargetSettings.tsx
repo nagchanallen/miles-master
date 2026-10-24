@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form } from 'semantic-ui-react';
 import {
   defaultTargets,
-  CABINS,
+  cabinsFor,
+  cabinLabel,
   validTarget,
   type Airline,
   type Region,
@@ -27,12 +28,12 @@ export default function TargetSettings({
       <Form className="targets" onSubmit={(e) => e.preventDefault()}>
         {(['JAL', 'ANA'] as Airline[]).flatMap((airline) =>
           (['domestic', 'international'] as Region[]).flatMap((region) =>
-            CABINS.map((cabin) => {
+            cabinsFor(airline, region).map((cabin) => {
               const key = `${airline}-${region}-${cabin}`;
               return (
                 <Form.Field key={key} error={key in invalid}>
                   <label htmlFor={key}>
-                    {airline} · {t(region)} · {t(cabin)}
+                    {airline} · {t(region)} · {t(cabinLabel(airline, region, cabin))}
                   </label>
                   <input
                     id={key}
@@ -81,6 +82,24 @@ export default function TargetSettings({
         }}
       >
         {t('resetTargets')}
+      </Button>
+      <Button
+        type="button"
+        size="small"
+        onClick={() => {
+          setInvalid((previous) =>
+            Object.fromEntries(
+              Object.entries(previous).filter(([key]) => !key.includes('-domestic-')),
+            ),
+          );
+          const defaults = defaultTargets();
+          onChange({
+            JAL: { ...targets.JAL, domestic: defaults.JAL.domestic },
+            ANA: { ...targets.ANA, domestic: defaults.ANA.domestic },
+          });
+        }}
+      >
+        {t('resetDomesticTargets')}
       </Button>
       {Object.keys(invalid).length > 0 && (
         <p role="alert" id="target-error">

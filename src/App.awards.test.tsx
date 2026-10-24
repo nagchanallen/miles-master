@@ -20,6 +20,7 @@ function openLookup() {
 describe('cabin targets and mileage lookup', () => {
   it('changes the decision with the award cabin and edits each target independently', () => {
     start();
+    enter('Flight type', 'international');
     enter('Cash fare (optional)', '50000');
     enter('Miles required', '20000');
     enter('Award ticket cash payment', '5000');
@@ -27,9 +28,9 @@ describe('cabin targets and mileage lookup', () => {
     enter('Award cabin / target', 'business');
     expect(screen.getByText('¥85,000')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Cash favored' })).toBeInTheDocument();
-    enter('JAL · Domestic · Business', '2.2');
+    enter('JAL · International · Business', '2.2');
     expect(screen.getByText('¥49,000')).toBeInTheDocument();
-    fireEvent.click(screen.getByText('Use ¥2 / ¥4 / ¥6 defaults'));
+    fireEvent.click(screen.getByText('Restore all default targets'));
     expect(screen.getByText('¥85,000')).toBeInTheDocument();
   });
   it('applies an estimate explicitly and preserves editable miles and lookup choices on reload and backup', () => {
@@ -75,5 +76,37 @@ describe('cabin targets and mileage lookup', () => {
     enter('Award cabin / target', 'first');
     expect(apply).toBeDisabled();
     expect(screen.getByLabelText('Miles required')).toHaveValue(26500);
+  });
+});
+
+describe('domestic cabins', () => {
+  it('offers only Economy and Premium Class for ANA and normalizes airline switches', () => {
+    start();
+    enter('Award cabin / target', 'first');
+    enter('Award airline / miles', 'ANA');
+    const cabin = screen.getByLabelText('Award cabin / target');
+    expect(
+      within(cabin)
+        .getAllByRole('option')
+        .map((o) => o.textContent),
+    ).toEqual(['Economy', 'Premium Class']);
+    expect(cabin).toHaveValue('business');
+    expect(screen.queryByLabelText('ANA · Domestic · First class')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('ANA · Domestic · Premium Class')).toHaveValue(2.5);
+    enter('Flight type', 'international');
+    expect(within(cabin).getAllByRole('option')).toHaveLength(3);
+    enter('Award cabin / target', 'first');
+    enter('Flight type', 'domestic');
+    expect(cabin).toHaveValue('business');
+  });
+  it('applies looser domestic targets without replacing international targets', () => {
+    start();
+    enter('JAL · Domestic · Economy', '7');
+    enter('JAL · International · Business', '9');
+    fireEvent.click(screen.getByText('Use domestic defaults'));
+    expect(screen.getByLabelText('JAL · Domestic · Economy')).toHaveValue(1.5);
+    expect(screen.getByLabelText('JAL · Domestic · Class J')).toHaveValue(2);
+    expect(screen.getByLabelText('JAL · Domestic · First class')).toHaveValue(3);
+    expect(screen.getByLabelText('JAL · International · Business')).toHaveValue(9);
   });
 });

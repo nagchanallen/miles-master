@@ -6,6 +6,21 @@ export type Region = 'domestic' | 'international';
 export type Amount = number | '';
 export const CABINS = ['economy', 'business', 'first'] as const;
 export type Cabin = (typeof CABINS)[number];
+// Keep stored cabin keys compatible with v3 backups. Domestic business denotes
+// JAL Class J or ANA Premium Class; ANA's old first slot is retained only as data.
+export const cabinsFor = (airline: Airline, region: Region): readonly Cabin[] =>
+  airline === 'ANA' && region === 'domestic' ? ['economy', 'business'] : CABINS;
+export const cabinLabel = (airline: Airline, region: Region, cabin: Cabin) =>
+  region === 'domestic' && cabin === 'business'
+    ? airline === 'JAL'
+      ? 'classJ'
+      : 'premiumClass'
+    : cabin;
+export function normalizeCabin(option: FlightOption): FlightOption {
+  return option.airline === 'ANA' && option.region === 'domestic' && option.awardCabin === 'first'
+    ? { ...option, awardCabin: 'business' }
+    : option;
+}
 export type Targets = Record<Airline, Record<Region, Record<Cabin, number>>>;
 export interface FlightDetails {
   route: string;
@@ -82,8 +97,14 @@ export const targetFor = (option: FlightOption, targets: Targets) =>
   targets[option.airline][option.region][option.awardCabin];
 export function defaultTargets(): Targets {
   return {
-    JAL: { domestic: defaultCabinTargets(), international: defaultCabinTargets() },
-    ANA: { domestic: defaultCabinTargets(), international: defaultCabinTargets() },
+    JAL: {
+      domestic: { economy: 1.5, business: 2, first: 3 },
+      international: defaultCabinTargets(),
+    },
+    ANA: {
+      domestic: { economy: 1.5, business: 2.5, first: 3 },
+      international: defaultCabinTargets(),
+    },
   };
 }
 export function initialState(): AppState {
@@ -233,7 +254,7 @@ export function parseBackup(json: string): AppState {
         // v1 labels described a shared itinerary. Copy them to both sides, but
         // do not infer the cash airline from the mileage program.
         const legacyDetails = raw.version === 1 ? { ...o, flightNumbers: '' } : undefined;
-        return {
+        return normalizeCabin({
           id: identifier(o.id, usedOptions),
           airline: choice(o.airline, ['JAL', 'ANA'] as const),
           awardCabin: raw.version === 3 ? choice(o.awardCabin, CABINS) : ('economy' as const),
@@ -254,7 +275,7 @@ export function parseBackup(json: string): AppState {
           fuel: price(o.fuel),
           taxes: price(o.taxes),
           other: price(o.other),
-        };
+        });
       }),
     };
   });

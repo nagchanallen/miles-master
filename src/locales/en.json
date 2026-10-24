@@ -4,7 +4,7 @@
   "targets": "Your target values",
   "domestic": "Domestic",
   "international": "International",
-  "examples": "Editable starting thresholds: economy ¥2, business ¥4, first ¥6 per mile. Higher targets make miles harder to justify. Existing saved targets are preserved; these are personal thresholds, not market prices.",
+  "examples": "Domestic defaults: Economy ¥1.50; JAL Class J ¥2 and First ¥3; ANA Premium Class ¥2.50 per mile. International: Economy ¥2, Business ¥4, First ¥6. These editable thresholds are personal preferences, not market prices. Saved targets are preserved.",
   "groups": "Your trips",
   "newGroup": "New trip",
   "unnamed": "Untitled trip",
@@ -110,5 +110,8 @@
   "lookupEditHint": "Applying fills miles and the award route label. Miles remain editable. Changing lookup choices does not replace entered miles: apply again if needed. Fuel surcharge and taxes are entered separately.",
   "officialChart": "{{airline}} official chart and seasons",
   "chartChecked": "Chart data checked: {{date}}. Stored reference data; verify with the airline before booking.",
-  "resetTargets": "Use ¥2 / ¥4 / ¥6 defaults"
+  "resetTargets": "Restore all default targets",
+  "classJ": "Class J",
+  "premiumClass": "Premium Class",
+  "resetDomesticTargets": "Use domestic defaults"
 }

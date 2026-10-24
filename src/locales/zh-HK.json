@@ -4,7 +4,7 @@
   "targets": "你的目標估值",
   "domestic": "日本國內線",
   "international": "國際線",
-  "examples": "初始目標為每里經濟艙 ¥2、商務艙 ¥4、頭等艙 ¥6。目標越高，使用里數的門檻越高。已儲存的目標會保留；這些是個人判斷門檻，並非市場價格，可自行修改。",
+  "examples": "國內線預設每里目標：經濟艙 ¥1.50；JAL Class J ¥2、頭等艙 ¥3；ANA Premium Class ¥2.50。國際線：經濟艙 ¥2、商務艙 ¥4、頭等艙 ¥6。這些可修改的門檻是個人判斷標準，並非市場價格。已儲存的目標會保留。",
   "groups": "你的行程",
   "newGroup": "新增行程",
   "unnamed": "未命名行程",
@@ -110,5 +110,8 @@
   "lookupEditHint": "套用後會填入里數及里數機票航線標籤，里數仍可修改。更改選項不會覆寫已輸入的里數，如有需要請再次套用。燃油附加費及稅項須另行輸入。",
   "officialChart": "{{airline}} 官方兌換表及季節",
   "chartChecked": "兌換表核對日期：{{date}}。此為已儲存的參考資料，訂位前請向航空公司確認。",
-  "resetTargets": "使用 ¥2／¥4／¥6 預設目標"
+  "resetTargets": "還原所有預設目標",
+  "classJ": "Class J",
+  "premiumClass": "Premium Class",
+  "resetDomesticTargets": "使用國內線預設目標"
 }

@@ -93,11 +93,11 @@ describe('versioned JSON backups', () => {
   it('provides independent, editable targets for each cabin', () => {
     expect(initialState().targets).toEqual({
       JAL: {
-        domestic: { economy: 2, business: 4, first: 6 },
+        domestic: { economy: 1.5, business: 2, first: 3 },
         international: { economy: 2, business: 4, first: 6 },
       },
       ANA: {
-        domestic: { economy: 2, business: 4, first: 6 },
+        domestic: { economy: 1.5, business: 2.5, first: 3 },
         international: { economy: 2, business: 4, first: 6 },
       },
     });

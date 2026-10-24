@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Button, Card, Form, Message } from 'semantic-ui-react';
 import {
   calculate,
+  cabinsFor,
+  cabinLabel,
+  normalizeCabin,
   targetFor,
   switchFeeMode,
   validAmount,
@@ -44,7 +47,7 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
   const result = calculate(option, target);
   const status = result.recommendation ?? (result.estimated === null ? 'incomplete' : 'needCash');
   const update = <K extends keyof FlightOption>(key: K, value: FlightOption[K]) =>
-    onChange({ ...option, [key]: value });
+    onChange(normalizeCabin({ ...option, [key]: value }));
   function numberField(key: NumberKey, wide = false) {
     const inputId = `${option.id}-${key}`;
     return (
@@ -78,7 +81,7 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
   }
   function selectField<K extends 'airline' | 'cashAirline' | 'region' | 'trip' | 'awardCabin'>(
     key: K,
-    values: FlightOption[K][],
+    values: readonly FlightOption[K][],
   ) {
     return (
       <Form.Field>
@@ -94,7 +97,15 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
                 ? t('notSpecified')
                 : value === 'JAL' || value === 'ANA'
                   ? value
-                  : t(value)}
+                  : key === 'awardCabin'
+                    ? t(
+                        cabinLabel(
+                          option.airline,
+                          option.region,
+                          value as FlightOption['awardCabin'],
+                        ),
+                      )
+                    : t(value)}
             </option>
           ))}
         </select>
@@ -147,7 +158,8 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
               {decimal(target)} <small>{t('unit')}</small>
             </dd>
             <span className="hint">
-              {option.airline} · {t(option.region)} · {t(option.awardCabin)}
+              {option.airline} · {t(option.region)} ·{' '}
+              {t(cabinLabel(option.airline, option.region, option.awardCabin))}
             </span>
           </div>
         </dl>
@@ -178,7 +190,7 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
               <div className="field-grid">
                 <div className="full">{selectField('airline', ['JAL', 'ANA'])}</div>
                 <div className="full">
-                  {selectField('awardCabin', ['economy', 'business', 'first'])}
+                  {selectField('awardCabin', cabinsFor(option.airline, option.region))}
                 </div>
                 <div className="full">
                   <AwardMileageLookup

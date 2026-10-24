@@ -179,7 +179,7 @@ describe('comparison workflow', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Browser saving is unavailable.');
     enter('Miles required', '10000');
     enter('Award ticket cash payment', '0');
-    expect(screen.getByText('¥20,000')).toBeInTheDocument();
+    expect(screen.getByText('¥15,000')).toBeInTheDocument();
   });
   it('exports the current comparison as a versioned JSON download', async () => {
     const user = userEvent.setup();
