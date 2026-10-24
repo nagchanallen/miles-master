@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import AwardMileageLookup from './AwardMileageLookup';
 import FlightDetailsFields from './FlightDetailsFields';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Form, Message } from 'semantic-ui-react';
 import {
   calculate,
+  targetFor,
   switchFeeMode,
   validAmount,
   type FlightOption,
@@ -38,7 +40,7 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }).format(n);
-  const target = targets[option.airline][option.region];
+  const target = targetFor(option, targets);
   const result = calculate(option, target);
   const status = result.recommendation ?? (result.estimated === null ? 'incomplete' : 'needCash');
   const update = <K extends keyof FlightOption>(key: K, value: FlightOption[K]) =>
@@ -74,7 +76,7 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
       </Form.Field>
     );
   }
-  function selectField<K extends 'airline' | 'cashAirline' | 'region' | 'trip'>(
+  function selectField<K extends 'airline' | 'cashAirline' | 'region' | 'trip' | 'awardCabin'>(
     key: K,
     values: FlightOption[K][],
   ) {
@@ -145,7 +147,7 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
               {decimal(target)} <small>{t('unit')}</small>
             </dd>
             <span className="hint">
-              {option.airline} · {t(option.region)}
+              {option.airline} · {t(option.region)} · {t(option.awardCabin)}
             </span>
           </div>
         </dl>
@@ -175,6 +177,22 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
               <h3 id={`${option.id}-award-heading`}>{t('redeemMiles')}</h3>
               <div className="field-grid">
                 <div className="full">{selectField('airline', ['JAL', 'ANA'])}</div>
+                <div className="full">
+                  {selectField('awardCabin', ['economy', 'business', 'first'])}
+                </div>
+                <div className="full">
+                  <AwardMileageLookup
+                    option={option}
+                    onChange={(next) => {
+                      setInvalid((previous) => {
+                        const result = { ...previous };
+                        delete result.miles;
+                        return result;
+                      });
+                      onChange(next);
+                    }}
+                  />
+                </div>
                 {numberField('miles', true)}
                 {option.feeMode === 'total' ? (
                   numberField('total', true)

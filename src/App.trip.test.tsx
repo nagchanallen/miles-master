@@ -19,7 +19,7 @@ function start() {
 describe('trip decision interface', () => {
   it('does not round a small valuation advantage down to zero', () => {
     start();
-    enter(screen.getByLabelText('JAL · Domestic'), '0.99');
+    enter(screen.getByLabelText('JAL · Domestic · Economy'), '0.99');
     enter(screen.getByLabelText('Cash fare (optional)'), '1');
     enter(screen.getByLabelText('Miles required'), '1');
     enter(screen.getByLabelText('Award ticket cash payment'), '0');
@@ -59,8 +59,8 @@ describe('trip decision interface', () => {
     enter(award.getByLabelText('Route'), 'NRT → CTS');
     enter(award.getByLabelText('Departure'), '2026-12-11');
     enter(award.getByLabelText('Flight numbers'), 'JL3049');
-    enter(screen.getByLabelText('JAL · Domestic'), '2');
-    enter(screen.getByLabelText('ANA · Domestic'), '3');
+    enter(screen.getByLabelText('JAL · Domestic · Economy'), '2');
+    enter(screen.getByLabelText('ANA · Domestic · Economy'), '3');
     enter(cash.getByLabelText('Cash fare (optional)'), '50000');
     enter(award.getByLabelText('Miles required'), '20000');
     enter(award.getByLabelText('Award ticket cash payment'), '5000');

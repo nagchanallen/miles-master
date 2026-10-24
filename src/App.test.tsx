@@ -12,6 +12,7 @@ beforeEach(async () => {
 const startEnglish = () => {
   const state = initialState();
   state.language = 'en';
+  state.targets.JAL.domestic.economy = 1.5;
   localStorage.setItem(STORAGE_KEY, serializeBackup(state));
   return render(<App />);
 };
@@ -131,16 +132,16 @@ describe('comparison workflow', () => {
   });
   it('restores saved options and target edits on reload', async () => {
     const view = startEnglish();
-    enter('JAL · Domestic', '2.5');
+    enter('JAL · Domestic · Economy', '2.5');
     enter('Miles required', '10000');
     enter('Award ticket cash payment', '0');
     await waitFor(() =>
-      expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).targets.JAL.domestic).toBe(2.5),
+      expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).targets.JAL.domestic.economy).toBe(2.5),
     );
     view.unmount();
     render(<App />);
     expect(screen.getByText('¥25,000')).toBeInTheDocument();
-    expect(screen.getByLabelText('JAL · Domestic')).toHaveValue(2.5);
+    expect(screen.getByLabelText('JAL · Domestic · Economy')).toHaveValue(2.5);
   });
   it('does not overwrite unreadable saved data', async () => {
     localStorage.setItem(STORAGE_KEY, 'broken');
@@ -178,7 +179,7 @@ describe('comparison workflow', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Browser saving is unavailable.');
     enter('Miles required', '10000');
     enter('Award ticket cash payment', '0');
-    expect(screen.getByText('¥15,000')).toBeInTheDocument();
+    expect(screen.getByText('¥20,000')).toBeInTheDocument();
   });
   it('exports the current comparison as a versioned JSON download', async () => {
     const user = userEvent.setup();
@@ -196,7 +197,7 @@ describe('comparison workflow', () => {
         reader.onload = () => resolve(String(reader.result));
         reader.readAsText(blob);
       });
-      expect(JSON.parse(text)).toMatchObject({ version: 2, groups: [{ name: 'Exported trip' }] });
+      expect(JSON.parse(text)).toMatchObject({ version: 3, groups: [{ name: 'Exported trip' }] });
       expect(click).toHaveBeenCalledOnce();
     } finally {
       await new Promise((resolve) => setTimeout(resolve, 1100));
