@@ -1,9 +1,12 @@
+import type { AwardLookup } from './awardChart';
 export const LANGUAGES = ['ja', 'en', 'zh-HK'] as const;
 export type Language = (typeof LANGUAGES)[number];
 export type Airline = 'JAL' | 'ANA';
 export type Region = 'domestic' | 'international';
 export type Amount = number | '';
-export type Targets = Record<Airline, Record<Region, number>>;
+export const CABINS = ['economy', 'business', 'first'] as const;
+export type Cabin = (typeof CABINS)[number];
+export type Targets = Record<Airline, Record<Region, Record<Cabin, number>>>;
 export interface FlightDetails {
   route: string;
   departure: string;
@@ -14,6 +17,8 @@ export interface FlightDetails {
 export interface FlightOption {
   id: string;
   airline: Airline;
+  awardCabin: Cabin;
+  awardLookup: AwardLookup;
   region: Region;
   trip: 'one' | 'round';
   cashAirline: Airline | '';
@@ -33,7 +38,7 @@ export interface Comparison {
   options: FlightOption[];
 }
 export interface AppState {
-  version: 2;
+  version: 3;
   language: Language;
   targets: Targets;
   groups: Comparison[];
@@ -53,6 +58,8 @@ export function newOption(): FlightOption {
   return {
     id: newId(),
     airline: 'JAL',
+    awardCabin: 'economy',
+    awardLookup: { origin: '', destination: '', outbound: '', inbound: '' },
     region: 'domestic',
     trip: 'round',
     cashAirline: '',
@@ -70,12 +77,21 @@ export function newOption(): FlightOption {
 export function newComparison(): Comparison {
   return { id: newId(), name: '', options: [newOption()] };
 }
+const defaultCabinTargets = () => ({ economy: 2, business: 4, first: 6 });
+export const targetFor = (option: FlightOption, targets: Targets) =>
+  targets[option.airline][option.region][option.awardCabin];
+export function defaultTargets(): Targets {
+  return {
+    JAL: { domestic: defaultCabinTargets(), international: defaultCabinTargets() },
+    ANA: { domestic: defaultCabinTargets(), international: defaultCabinTargets() },
+  };
+}
 export function initialState(): AppState {
   const group = newComparison();
   return {
-    version: 2,
+    version: 3,
     language: 'ja',
-    targets: { JAL: { domestic: 1.5, international: 2 }, ANA: { domestic: 1.5, international: 2 } },
+    targets: defaultTargets(),
     groups: [group],
     selected: group.id,
   };
@@ -170,15 +186,39 @@ function flightDetails(value: unknown): FlightDetails {
     flightNumbers: text(details.flightNumbers, 300),
   };
 }
+function awardLookup(value: unknown): AwardLookup {
+  const lookup = record(value);
+  return {
+    origin: text(lookup.origin, 20),
+    destination: text(lookup.destination, 20),
+    outbound: choice(lookup.outbound, ['', 'low', 'regular', 'high'] as const),
+    inbound: choice(lookup.inbound, ['', 'low', 'regular', 'high'] as const),
+  };
+}
 export function parseBackup(json: string): AppState {
   if (new TextEncoder().encode(json).length > MAX_BACKUP_BYTES) return invalid();
   const raw = record(JSON.parse(json));
-  if (raw.version !== 1 && raw.version !== 2) return invalid();
+  if (raw.version !== 1 && raw.version !== 2 && raw.version !== 3) return invalid();
   const targetData = record(raw.targets);
-  function airlineTargets(airline: Airline): Record<Region, number> {
+  function cabinTargets(value: unknown): Record<Cabin, number> {
+    if (raw.version !== 3) {
+      if (!validTarget(value)) return invalid();
+      return { economy: value, business: value, first: value };
+    }
+    const values = record(value);
+    if (!CABINS.every((cabin) => validTarget(values[cabin]))) return invalid();
+    return {
+      economy: values.economy as number,
+      business: values.business as number,
+      first: values.first as number,
+    };
+  }
+  function airlineTargets(airline: Airline): Targets[Airline] {
     const values = record(targetData[airline]);
-    if (!validTarget(values.domestic) || !validTarget(values.international)) return invalid();
-    return { domestic: values.domestic, international: values.international };
+    return {
+      domestic: cabinTargets(values.domestic),
+      international: cabinTargets(values.international),
+    };
   }
   const targets = { JAL: airlineTargets('JAL'), ANA: airlineTargets('ANA') };
   const usedGroups = new Set<string>();
@@ -196,6 +236,11 @@ export function parseBackup(json: string): AppState {
         return {
           id: identifier(o.id, usedOptions),
           airline: choice(o.airline, ['JAL', 'ANA'] as const),
+          awardCabin: raw.version === 3 ? choice(o.awardCabin, CABINS) : ('economy' as const),
+          awardLookup:
+            raw.version === 3
+              ? awardLookup(o.awardLookup)
+              : { origin: '', destination: '', outbound: '' as const, inbound: '' as const },
           region: choice(o.region, ['domestic', 'international'] as const),
           trip: choice(o.trip, ['one', 'round'] as const),
           feeMode: choice(o.feeMode, ['total', 'detail'] as const),
@@ -215,7 +260,7 @@ export function parseBackup(json: string): AppState {
   });
   if (!groups.length || !usedGroups.has(raw.selected as string)) return invalid();
   return {
-    version: 2,
+    version: 3,
     language: choice(raw.language, LANGUAGES),
     targets,
     groups,

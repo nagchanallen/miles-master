@@ -38,11 +38,15 @@ describe('cash versus miles for the same trip', () => {
       },
     });
     expect(parseBackup(serializeBackup(state))).toEqual(state);
-    expect(JSON.parse(serializeBackup(state)).version).toBe(2);
+    expect(JSON.parse(serializeBackup(state)).version).toBe(3);
   });
   it('migrates shared flight labels in a v1 backup without changing prices or targets', () => {
     const legacy = JSON.parse(serializeBackup(initialState()));
     legacy.version = 1;
+    legacy.targets = {
+      JAL: { domestic: 1.5, international: 2 },
+      ANA: { domestic: 1.5, international: 2 },
+    };
     const option = legacy.groups[0].options[0];
     delete option.cashFlight;
     delete option.awardFlight;
@@ -57,8 +61,8 @@ describe('cash versus miles for the same trip', () => {
       total: 2000,
     });
     const migrated = parseBackup(JSON.stringify(legacy));
-    expect(migrated.version).toBe(2);
-    expect(migrated.targets).toEqual(legacy.targets);
+    expect(migrated.version).toBe(3);
+    expect(migrated.targets.JAL.domestic.economy).toBe(legacy.targets.JAL.domestic);
     const next = migrated.groups[0].options[0];
     expect(next).toMatchObject({ cash: 40000, miles: 15000, total: 2000, cashAirline: '' });
     expect(next.cashFlight).toEqual({

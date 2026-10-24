@@ -62,7 +62,7 @@ describe('award ticket calculations', () => {
     expect(calculate(option(), 1.001).estimated).toBeNull();
     expect(calculate(option(), 1.1).estimated).toBe(27000);
     const state = initialState();
-    state.targets.JAL.domestic = 1.001;
+    state.targets.JAL.domestic.economy = 1.001;
     expect(() => parseBackup(JSON.stringify(state))).toThrow();
   });
   it('does not create an unimportable total when detailed fees exceed the input limit', () => {
@@ -90,10 +90,16 @@ describe('versioned JSON backups', () => {
     state.groups[0].options[0].cash = 50000;
     expect(parseBackup(serializeBackup(state))).toEqual(state);
   });
-  it('provides four independent, editable example targets', () => {
+  it('provides independent, editable targets for each cabin', () => {
     expect(initialState().targets).toEqual({
-      JAL: { domestic: 1.5, international: 2 },
-      ANA: { domestic: 1.5, international: 2 },
+      JAL: {
+        domestic: { economy: 2, business: 4, first: 6 },
+        international: { economy: 2, business: 4, first: 6 },
+      },
+      ANA: {
+        domestic: { economy: 2, business: 4, first: 6 },
+        international: { economy: 2, business: 4, first: 6 },
+      },
     });
   });
   it.each(['bad json', 'null', '{}', '{"version":3}'])(
@@ -117,7 +123,7 @@ describe('versioned JSON backups', () => {
         s.groups[0].options[0].cash = -1;
       },
       (s: ReturnType<typeof initialState>) => {
-        s.targets.ANA.international = 0;
+        s.targets.ANA.international.economy = 0;
       },
       (s: ReturnType<typeof initialState>) => {
         s.groups[0].options[0].awardFlight.route = 'x'.repeat(301);
