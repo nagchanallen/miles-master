@@ -12,7 +12,7 @@ describe('Japanese and English translations', () => {
     }
   });
   it('translates numbered option controls in both languages', () => {
-    expect(i18n.t('removeOption', { lng: 'en', number: 2 })).toBe('Remove option 2');
-    expect(i18n.t('removeOption', { lng: 'ja', number: 2 })).toBe('候補2を削除');
+    expect(i18n.t('removeOption', { lng: 'en', number: 2 })).toBe('Remove comparison 2');
+    expect(i18n.t('removeOption', { lng: 'ja', number: 2 })).toBe('比較2を削除');
   });
 });

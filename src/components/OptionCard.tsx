@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import FlightDetailsFields from './FlightDetailsFields';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Form, Message } from 'semantic-ui-react';
 import {
@@ -22,13 +23,13 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
   const { t, i18n } = useTranslation();
   const [invalid, setInvalid] = useState<Partial<Record<NumberKey, string>>>({});
   const locale = i18n.language === 'ja' ? 'ja-JP' : 'en-US';
-  const money = (n: number | null) =>
+  const money = (n: number | null, maximumFractionDigits = 0) =>
     n === null
       ? '—'
       : new Intl.NumberFormat(locale, {
           style: 'currency',
           currency: 'JPY',
-          maximumFractionDigits: 0,
+          maximumFractionDigits,
         }).format(n);
   const decimal = (n: number | null) =>
     n === null
@@ -73,7 +74,10 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
       </Form.Field>
     );
   }
-  function selectField<K extends 'airline' | 'region' | 'trip'>(key: K, values: FlightOption[K][]) {
+  function selectField<K extends 'airline' | 'cashAirline' | 'region' | 'trip'>(
+    key: K,
+    values: FlightOption[K][],
+  ) {
     return (
       <Form.Field>
         <label htmlFor={`${option.id}-${key}`}>{t(key)}</label>
@@ -84,28 +88,14 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
         >
           {values.map((value) => (
             <option key={value} value={value}>
-              {value === 'JAL' || value === 'ANA' ? value : t(value)}
+              {value === ''
+                ? t('notSpecified')
+                : value === 'JAL' || value === 'ANA'
+                  ? value
+                  : t(value)}
             </option>
           ))}
         </select>
-      </Form.Field>
-    );
-  }
-  function labelField(
-    key: 'route' | 'departure' | 'returning' | 'cabin',
-    type = 'text',
-    wide = false,
-  ) {
-    return (
-      <Form.Field className={wide ? 'full' : ''}>
-        <label htmlFor={`${option.id}-${key}`}>{t(key)}</label>
-        <input
-          id={`${option.id}-${key}`}
-          type={type}
-          maxLength={300}
-          value={option[key]}
-          onChange={(e) => update(key, e.target.value)}
-        />
       </Form.Field>
     );
   }
@@ -126,78 +116,104 @@ export default function OptionCard({ option, index, targets, onChange, onRemove 
           {t('remove')}
         </Button>
       </Card.Content>
+      <Card.Content
+        className={`result ${status === 'useCash' ? 'cash' : status === 'useMiles' ? 'miles' : 'neutral'}`}
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <h2 className="decision-title">{t(status)}</h2>
+        {result.difference !== null && result.recommendation !== 'equal' && (
+          <p className="decision-difference">
+            {t('difference', { amount: money(Math.abs(result.difference), 2) })}
+          </p>
+        )}
+        {result.recommendation !== null && <p className="hint">{t('valuationNote')}</p>}
+        <dl className="decision-metrics">
+          <div>
+            <dt>{t('estimated')}</dt>
+            <dd>{money(result.estimated)}</dd>
+          </div>
+          <div>
+            <dt>{t('value')}</dt>
+            <dd>
+              <span>{decimal(result.value)}</span> <small>{t('unit')}</small>
+            </dd>
+          </div>
+          <div>
+            <dt>{t('targetUsed')}</dt>
+            <dd>
+              {decimal(target)} <small>{t('unit')}</small>
+            </dd>
+            <span className="hint">
+              {option.airline} · {t(option.region)}
+            </span>
+          </div>
+        </dl>
+      </Card.Content>
       <Card.Content>
         <Form onSubmit={(e) => e.preventDefault()}>
-          <div className="field-grid">
-            {selectField('airline', ['JAL', 'ANA'])}
-            {selectField('region', ['domestic', 'international'])}
+          <div className="field-grid itinerary-fields">
             {selectField('trip', ['one', 'round'])}
+            {selectField('region', ['domestic', 'international'])}
           </div>
-          <div className="section-label">{t('pricing')} · JPY</div>
-          <div className="field-grid">
-            {numberField('cash')}
-            {numberField('miles')}
-            {option.feeMode === 'total' ? (
-              numberField('total', true)
-            ) : (
-              <>
-                {numberField('fuel')}
-                {numberField('taxes')}
-                {numberField('other', true)}
-              </>
-            )}
+          <p className="hint comparison-hint">{t('comparisonHint')}</p>
+          <div className="ticket-choices">
+            <section className="ticket-choice" aria-labelledby={`${option.id}-cash-heading`}>
+              <h3 id={`${option.id}-cash-heading`}>{t('payCash')}</h3>
+              <div className="field-grid">
+                {numberField('cash', true)}
+                <div className="full">{selectField('cashAirline', ['', 'JAL', 'ANA'])}</div>
+              </div>
+              <FlightDetailsFields
+                id={`${option.id}-cash`}
+                details={option.cashFlight}
+                roundTrip={option.trip === 'round'}
+                onChange={(details) => update('cashFlight', details)}
+              />
+            </section>
+            <section className="ticket-choice" aria-labelledby={`${option.id}-award-heading`}>
+              <h3 id={`${option.id}-award-heading`}>{t('redeemMiles')}</h3>
+              <div className="field-grid">
+                <div className="full">{selectField('airline', ['JAL', 'ANA'])}</div>
+                {numberField('miles', true)}
+                {option.feeMode === 'total' ? (
+                  numberField('total', true)
+                ) : (
+                  <>
+                    {numberField('fuel')}
+                    {numberField('taxes')}
+                    {numberField('other', true)}
+                  </>
+                )}
+              </div>
+              <button
+                type="button"
+                className="fee-toggle"
+                onClick={() => {
+                  setInvalid({});
+                  onChange(switchFeeMode(option));
+                }}
+              >
+                {t(option.feeMode === 'total' ? 'detail' : 'simple')}
+              </button>
+              <p className="hint">{t('feeHint')}</p>
+              {option.feeMode === 'detail' && option.total !== '' && (
+                <p className="hint">{t('splitHint')}</p>
+              )}
+              <FlightDetailsFields
+                id={`${option.id}-award`}
+                details={option.awardFlight}
+                roundTrip={option.trip === 'round'}
+                onChange={(details) => update('awardFlight', details)}
+              />
+            </section>
           </div>
-          <button
-            type="button"
-            className="fee-toggle"
-            onClick={() => {
-              setInvalid({});
-              onChange(switchFeeMode(option));
-            }}
-          >
-            {t(option.feeMode === 'total' ? 'detail' : 'simple')}
-          </button>
-          <p className="hint">{t(option.feeMode === 'detail' ? 'splitHint' : 'feeHint')}</p>
           {Object.keys(invalid).length > 0 && (
             <Message negative size="tiny" id={`${option.id}-error`}>
               {t('numberError')}
             </Message>
           )}
-          <details className="labels">
-            <summary>{t('labels')}</summary>
-            <div className="field-grid">
-              {labelField('route', 'text', true)}
-              {labelField('departure', 'date')}
-              {option.trip === 'round' && labelField('returning', 'date')}
-              {labelField('cabin', 'text', true)}
-            </div>
-          </details>
         </Form>
-      </Card.Content>
-      <Card.Content className="result" aria-live="polite" aria-atomic="true">
-        <div className="metric-label">{t('value')}</div>
-        <div className="value">
-          <span>{decimal(result.value)}</span> <small>{t('unit')}</small>
-        </div>
-        <div className="result-row">
-          <span>{t('estimated')}</span>
-          <strong>{money(result.estimated)}</strong>
-        </div>
-        <div className="result-row">
-          <span>{t('targetUsed')}</span>
-          <span>
-            {decimal(target)} {t('unit')}
-          </span>
-        </div>
-        <div className="result-row">
-          <span>{t('feeTotal')}</span>
-          <span>{money(result.fees)}</span>
-        </div>
-        <div
-          className={`recommendation ${status === 'useCash' ? 'cash' : status === 'useMiles' ? 'miles' : 'neutral'}`}
-        >
-          {t(status)}
-        </div>
       </Card.Content>
     </Card>
   );

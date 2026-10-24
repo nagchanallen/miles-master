@@ -29,7 +29,7 @@ describe('comparison workflow', () => {
     expect(screen.getByText('¥35,000')).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Flight type'), { target: { value: 'international' } });
     expect(screen.getByText('¥45,000')).toBeInTheDocument();
-    expect(screen.getByText('Your target favors using miles')).toBeInTheDocument();
+    expect(screen.getByText('Miles favored')).toBeInTheDocument();
     await waitFor(() =>
       expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).groups[0].options[0].miles).toBe(20000),
     );
@@ -37,10 +37,10 @@ describe('comparison workflow', () => {
   it('supports comparison groups, multiple options, and labels', async () => {
     const user = userEvent.setup();
     startEnglish();
-    enter('Comparison name', 'Sapporo winter');
-    await user.click(screen.getByRole('button', { name: 'Add option' }));
+    enter('Trip name', 'Sapporo winter');
+    await user.click(screen.getByRole('button', { name: 'Add comparison' }));
     expect(screen.getAllByRole('article')).toHaveLength(2);
-    await user.click(screen.getByRole('button', { name: 'New comparison' }));
+    await user.click(screen.getByRole('button', { name: 'New trip' }));
     expect(screen.getAllByRole('article')).toHaveLength(1);
     await user.click(screen.getByRole('button', { name: 'Sapporo winter' }));
     expect(screen.getAllByRole('article')).toHaveLength(2);
@@ -50,7 +50,7 @@ describe('comparison workflow', () => {
     startEnglish();
     await user.selectOptions(screen.getByLabelText('Language / 言語'), 'ja');
     expect(
-      await screen.findByRole('heading', { name: 'そのマイル、いくらの価値？' }),
+      await screen.findByRole('heading', { name: 'この旅、現金とマイルどちらがお得？' }),
     ).toBeInTheDocument();
     expect(document.documentElement.lang).toBe('ja');
   });
@@ -76,15 +76,15 @@ describe('comparison workflow', () => {
     enter('Award ticket cash payment', '5000');
     enter('Miles required', '-1');
     expect(screen.queryByText('2.25')).not.toBeInTheDocument();
-    expect(screen.queryByText('Your target favors using miles')).not.toBeInTheDocument();
+    expect(screen.queryByText('Miles favored')).not.toBeInTheDocument();
   });
   it('confirms deletion and keeps a usable comparison after deleting the final group', async () => {
     const user = userEvent.setup();
     startEnglish();
     vi.spyOn(window, 'confirm').mockReturnValue(true);
-    await user.click(screen.getByRole('button', { name: 'Remove option 1' }));
+    await user.click(screen.getByRole('button', { name: 'Remove comparison 1' }));
     expect(screen.queryAllByRole('article')).toHaveLength(0);
-    await user.click(screen.getByRole('button', { name: 'Delete comparison' }));
+    await user.click(screen.getByRole('button', { name: 'Delete trip' }));
     expect(screen.getAllByRole('article')).toHaveLength(1);
   });
   it('imports a backup only after confirmation and rejects invalid JSON', async () => {
@@ -123,7 +123,7 @@ describe('comparison workflow', () => {
     localStorage.setItem(STORAGE_KEY, 'broken');
     render(<App />);
     expect(screen.getByRole('button', { name: /復旧用コピー|recovery copy/ })).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText(/比較名|Comparison name/), {
+    fireEvent.change(screen.getByLabelText(/旅行名|Trip name/), {
       target: { value: 'Temporary' },
     });
     expect(localStorage.getItem(STORAGE_KEY)).toBe('broken');
@@ -131,7 +131,7 @@ describe('comparison workflow', () => {
   it('leaves current comparisons intact when an import is cancelled', async () => {
     const user = userEvent.setup();
     startEnglish();
-    enter('Comparison name', 'Keep this trip');
+    enter('Trip name', 'Keep this trip');
     vi.spyOn(window, 'confirm').mockReturnValue(false);
     const state = initialState();
     state.language = 'en';
@@ -160,7 +160,7 @@ describe('comparison workflow', () => {
   it('exports the current comparison as a versioned JSON download', async () => {
     const user = userEvent.setup();
     startEnglish();
-    enter('Comparison name', 'Exported trip');
+    enter('Trip name', 'Exported trip');
     const createUrl = vi.fn((_blob: Blob) => 'blob:test');
     vi.stubGlobal('URL', { createObjectURL: createUrl, revokeObjectURL: vi.fn() });
     const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
@@ -173,7 +173,7 @@ describe('comparison workflow', () => {
         reader.onload = () => resolve(String(reader.result));
         reader.readAsText(blob);
       });
-      expect(JSON.parse(text)).toMatchObject({ version: 1, groups: [{ name: 'Exported trip' }] });
+      expect(JSON.parse(text)).toMatchObject({ version: 2, groups: [{ name: 'Exported trip' }] });
       expect(click).toHaveBeenCalledOnce();
     } finally {
       await new Promise((resolve) => setTimeout(resolve, 1100));
