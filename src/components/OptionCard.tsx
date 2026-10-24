@@ -22,7 +22,7 @@ interface Props {
 export default function OptionCard({ option, index, targets, onChange, onRemove }: Props) {
   const { t, i18n } = useTranslation();
   const [invalid, setInvalid] = useState<Partial<Record<NumberKey, string>>>({});
-  const locale = i18n.language === 'ja' ? 'ja-JP' : 'en-US';
+  const locale = i18n.resolvedLanguage ?? 'en';
   const money = (n: number | null, maximumFractionDigits = 0) =>
     n === null
       ? '—'

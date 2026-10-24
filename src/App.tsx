@@ -100,13 +100,14 @@ export default function App() {
           Miles Master
         </a>
         <label className="language">
-          <span className="sr-only">Language / 言語</span>
+          <span className="sr-only">Language / 言語 / 語言</span>
           <select
             value={state.language}
             onChange={(e) => setState({ ...state, language: e.target.value as Language })}
           >
             <option value="ja">日本語</option>
             <option value="en">English</option>
+            <option value="zh-HK">繁體中文（香港）</option>
           </select>
         </label>
       </header>

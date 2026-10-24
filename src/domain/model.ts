@@ -1,4 +1,5 @@
-export type Language = 'ja' | 'en';
+export const LANGUAGES = ['ja', 'en', 'zh-HK'] as const;
+export type Language = (typeof LANGUAGES)[number];
 export type Airline = 'JAL' | 'ANA';
 export type Region = 'domestic' | 'international';
 export type Amount = number | '';
@@ -215,7 +216,7 @@ export function parseBackup(json: string): AppState {
   if (!groups.length || !usedGroups.has(raw.selected as string)) return invalid();
   return {
     version: 2,
-    language: choice(raw.language, ['ja', 'en'] as const),
+    language: choice(raw.language, LANGUAGES),
     targets,
     groups,
     selected: raw.selected as string,

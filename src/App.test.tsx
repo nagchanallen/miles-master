@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import i18n from './i18n';
-import { initialState, serializeBackup } from './domain/model';
+import { initialState, parseBackup, serializeBackup } from './domain/model';
 import { STORAGE_KEY } from './storage';
 
 beforeEach(async () => {
@@ -20,6 +20,29 @@ function enter(label: string, value: string) {
 }
 
 describe('comparison workflow', () => {
+  it('supports Hong Kong Traditional Chinese throughout the UI, reloads, and backups', async () => {
+    const user = userEvent.setup();
+    const view = startEnglish();
+    enter('Miles required', '20000');
+    enter('Award ticket cash payment', '5000');
+    await user.selectOptions(screen.getByLabelText(/Language.*言語/), 'zh-HK');
+    expect(
+      await screen.findByRole('heading', { name: '這個行程，用現金還是里數？' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: '現金購票' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: '里數換票' })).toBeInTheDocument();
+    expect(document.documentElement.lang).toBe('zh-HK');
+    const price = new Intl.NumberFormat('zh-HK', { style: 'currency', currency: 'JPY' }).format(
+      35000,
+    );
+    expect(screen.getByText(price)).toBeInTheDocument();
+    const backup = localStorage.getItem(STORAGE_KEY)!;
+    expect(parseBackup(backup).language).toBe('zh-HK');
+    view.unmount();
+    render(<App />);
+    expect(screen.getByRole('heading', { name: '這個行程，用現金還是里數？' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Language.*言語/)).toHaveValue('zh-HK');
+  });
   it('calculates a redemption and switches the applicable target', async () => {
     startEnglish();
     enter('Cash fare (optional)', '50000');
@@ -48,7 +71,7 @@ describe('comparison workflow', () => {
   it('changes both the UI language and the document language', async () => {
     const user = userEvent.setup();
     startEnglish();
-    await user.selectOptions(screen.getByLabelText('Language / 言語'), 'ja');
+    await user.selectOptions(screen.getByLabelText(/Language.*言語/), 'ja');
     expect(
       await screen.findByRole('heading', { name: 'この旅、現金とマイルどちらがお得？' }),
     ).toBeInTheDocument();
