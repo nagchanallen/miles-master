@@ -44,7 +44,7 @@ Each trip can contain several cash-versus-miles comparisons. The primary result 
 
 Enter totals for one person and the entire one-way or round-trip itinerary. The cash fare must include all charges. Award charges can be entered as a total or a breakdown including fuel surcharge. Empty charges mean unknown; enter `0` for no charge. A cash fare is optional when calculating only the target-based ticket value.
 
-JAL and ANA each have independent domestic and international targets. The award airline, domestic/international category, and selected award cabin choose the applicable target; the cash airline and optional cabin labels are descriptive. Each category has editable economy, business, and first-class targets, initially ¥2 / ¥4 / ¥6 per mile. These are personal decision thresholds, not market valuations. Higher targets require a better redemption before favoring miles. Existing saved thresholds are preserved; use “Use ¥2 / ¥4 / ¥6 defaults” in target settings to adopt the new defaults.
+JAL and ANA each have independent domestic and international targets. The award airline, domestic/international category, and selected award cabin choose the applicable target; the cash airline and optional cabin labels are descriptive. Domestic targets are Economy ¥1.50, JAL Class J ¥2 / First ¥3, and ANA Premium Class ¥2.50 per mile. ANA domestic offers only Economy and Premium Class. International targets remain Economy ¥2 / Business ¥4 / First ¥6. These are personal decision thresholds, not market valuations. Higher targets require a better redemption before favoring miles. Existing saved thresholds are preserved; use “Use domestic defaults” to update only domestic targets, or “Restore all default targets” to reset both regions.
 
 ## Optional award-mile lookup
 
@@ -85,3 +85,5 @@ Alternatively, create the GitHub `production` environment and add `CLOUDFLARE_AC
 ## License
 
 [MIT](./LICENSE), retained from the original repository.
+
+Domestic cabin storage remains compatible with schema 3: `business` denotes JAL Class J or ANA Premium Class in domestic comparisons. An old ANA domestic `first` selection becomes Premium Class on import/reload or when switching airline/region, using the Premium Class target. The unused legacy ANA domestic `first` target is retained in backups but is not selectable or editable. Other saved target values remain unchanged.

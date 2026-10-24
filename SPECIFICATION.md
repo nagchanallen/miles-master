@@ -16,7 +16,7 @@ A frontend-only app answering: “For this trip, should I pay cash or redeem mil
 
 ## Target values
 
-Twelve independently editable values: economy, business, and first class within each airline and domestic/international category. Initial thresholds are ¥2 / ¥4 / ¥6 per mile respectively. The required award cabin selector determines the target; optional cabin labels do not. Existing targets remain unchanged on migration, with a button to apply the new defaults. They are illustrative defaults, not market valuations. Positive targets up to ¥10,000/mile are accepted in increments of ¥0.01.
+Eleven editable targets: JAL domestic Economy ¥1.50 / Class J ¥2 / First ¥3; ANA domestic Economy ¥1.50 / Premium Class ¥2.50; international Economy ¥2 / Business ¥4 / First ¥6 for each airline. ANA domestic has only two selectable cabins. A domestic-only reset preserves international settings. The required award cabin selector determines the target; optional cabin labels do not. Existing targets remain unchanged on migration, with a button to apply the new defaults. They are illustrative defaults, not market valuations. Positive targets up to ¥10,000/mile are accepted in increments of ¥0.01.
 
 ## Optional chart lookup
 
@@ -76,3 +76,5 @@ More currencies and languages, manual and automatic exchange rates, passengers, 
 - Use Conventional Commit messages. Keep the original repository history and LICENSE.
 - Include Copilot review context, but do not enable a paid review service. GitHub Copilot Free does not include code review.
 - Prepare a manually triggered Cloudflare deployment workflow. Publication remains deferred until explicitly requested.
+
+Domestic cabin storage remains compatible with schema 3: `business` denotes JAL Class J or ANA Premium Class in domestic comparisons. An old ANA domestic `first` selection becomes Premium Class on import/reload or when switching airline/region, using the Premium Class target. The unused legacy ANA domestic `first` target is retained in backups but is not selectable or editable. Other saved target values remain unchanged.
