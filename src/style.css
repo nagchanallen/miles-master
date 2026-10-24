@@ -1,4 +1,5 @@
 :root {
+  font-size: 16px;
   font-family:
     system-ui,
     -apple-system,
@@ -40,6 +41,16 @@ body {
 .miles-app :focus-visible {
   outline: 3px solid #b87928;
   outline-offset: 3px;
+}
+.miles-app .ui.form input:focus-visible,
+.miles-app .ui.form select:focus-visible {
+  outline: 3px solid #b87928;
+  outline-offset: 3px;
+}
+.miles-app .ui.button,
+.miles-app .ui.form input,
+.miles-app .ui.form select {
+  font-family: inherit;
 }
 .miles-app .topbar {
   max-width: 1440px;
@@ -122,7 +133,7 @@ body {
   font-weight: 400;
 }
 .hint {
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   line-height: 1.65;
 }
 .workspace {
@@ -197,12 +208,13 @@ body {
 }
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   flex-shrink: 0;
 }
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 305px), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 20px;
   align-items: start;
 }
@@ -223,6 +235,41 @@ body {
   justify-content: space-between;
   gap: 8px;
 }
+.miles-app .ui.card.flight-card > .card-heading::after {
+  display: none;
+}
+.ticket-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 20px;
+  align-items: start;
+}
+.ticket-choice {
+  container: ticket / inline-size;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #dce3dc;
+  border-radius: 10px;
+}
+.ticket-choice h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  font-family: inherit;
+  margin: 0 0 18px;
+}
+.comparison-hint {
+  margin: 14px 0 20px;
+}
+.field-grid.itinerary-fields {
+  max-width: 520px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+}
+@container ticket (max-width: 340px) {
+  .ticket-choice .field-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .option-number {
   font-size: 0.74rem;
   letter-spacing: 1.4px;
@@ -239,7 +286,7 @@ body {
   min-width: 0;
 }
 .miles-app .ui.form .field > label {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 7px;
 }
@@ -254,6 +301,7 @@ body {
   padding: 10px;
   line-height: 1.3;
   height: 43px;
+  font-size: 16px;
 }
 .miles-app select,
 .miles-app .ui.form select {
@@ -281,14 +329,6 @@ body {
 .full {
   grid-column: 1 / -1;
 }
-.section-label {
-  font-size: 0.7rem;
-  letter-spacing: 1.3px;
-  text-transform: uppercase;
-  color: #63746d;
-  font-weight: 700;
-  margin: 24px 0 14px;
-}
 .fee-toggle {
   font-size: 0.75rem !important;
   border: 0;
@@ -313,51 +353,42 @@ body {
   background: #f0f5ee;
   border-top: 1px solid #dce7d9;
 }
-.metric-label {
-  font-size: 0.78rem;
-  color: #63746d;
+.miles-app .ui.card.flight-card > .result.cash {
+  background: #fcf5e9;
 }
-.value {
-  font-size: 2.3rem;
-  letter-spacing: -1.3px;
+.miles-app .ui.card.flight-card > .result.neutral {
+  background: #f3f5f2;
+}
+.miles-app .decision-title {
+  font-family: inherit;
+  font-size: 1.4rem;
+  margin: 0 0 8px;
+}
+.decision-difference {
+  font-size: 1.1rem;
   font-weight: 600;
-  margin: 3px 0 14px;
+  margin-bottom: 8px;
+}
+.decision-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 20px;
+  margin: 20px 0 0;
+}
+.decision-metrics dt {
+  color: #63746d;
+  font-size: 0.8125rem;
+}
+.decision-metrics dd {
+  margin: 6px 0 0;
+  font-size: 1.3rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
-.value small {
-  font-size: 0.85rem;
-  letter-spacing: 0;
-  color: #63746d;
+.decision-metrics small {
+  font-size: 0.8rem;
   font-weight: 400;
-}
-.result-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 0.8rem;
-  line-height: 1.8;
-}
-.result-row strong {
-  font-size: 0.95rem;
-  white-space: nowrap;
-}
-.recommendation {
-  font-size: 0.8rem;
-  font-weight: 600;
-  border-radius: 6px;
-  padding: 9px 12px;
-  background: #dcebdc;
-  color: #215a38;
-  margin-top: 15px;
-}
-.recommendation.cash {
-  background: #f3e9d5;
-  color: #79561f;
-}
-.recommendation.neutral {
-  background: #e5e9e5;
-  color: #53635a;
 }
 .formula {
   margin-top: 30px;
@@ -400,11 +431,6 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-@media (min-width: 1250px) {
-  .cards:has(.flight-card:nth-child(3)) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 @media (max-width: 1100px) {
   .workspace {
