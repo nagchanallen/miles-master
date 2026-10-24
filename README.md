@@ -1,6 +1,6 @@
 # Miles Master
 
-A responsive frontend app for comparing JAL and ANA award tickets with cash fares. Includes fuel surcharges, taxes, and fees; Japanese and English interfaces; JPY pricing; and local browser storage with JSON backup/import.
+A responsive frontend app that helps you decide whether to pay cash or redeem miles for a trip. Compare different flights serving the same trip, with independent details for the cash and award alternatives. Includes fuel surcharges, taxes, and fees; Japanese and English interfaces; JPY pricing; and local browser storage with JSON backup/import.
 
 ## Stack
 
@@ -38,15 +38,17 @@ Read [SPECIFICATION.md](./SPECIFICATION.md) for product requirements and [CONTRI
 
 **Value per mile** = (cash ticket price − award ticket cash charges) ÷ required miles.
 
-**Ticket value at your target** = required miles × target value + award ticket cash charges.
+**Break-even cash fare** = required miles × target value + award ticket cash charges.
+
+Each trip can contain several cash-versus-miles comparisons. The primary result favors cash or miles and shows the difference at your target valuation, not literal cash savings. The cash and award flights may differ in airports, dates, flight numbers, airlines, and cabins; consider those differences when choosing.
 
 Enter totals for one person and the entire one-way or round-trip itinerary. The cash fare must include all charges. Award charges can be entered as a total or a breakdown including fuel surcharge. Empty charges mean unknown; enter `0` for no charge. A cash fare is optional when calculating only the target-based ticket value.
 
-JAL and ANA each have independent domestic and international targets. Defaults of ¥1.50/mile domestic and ¥2.00/mile international are editable examples, not market valuations.
+JAL and ANA each have independent domestic and international targets. Only the award airline and domestic/international category choose the applicable target; the cash airline is descriptive. Defaults of ¥1.50/mile domestic and ¥2.00/mile international are editable examples, not market valuations.
 
 ## Storage and translations
 
-Comparisons, targets, and language are saved under `miles-master.v1` in localStorage. Data belongs to the current browser and origin. Clearing site data removes it; use Export backup for JSON backups and moving data between localhost and a hosted domain. Import validates the file before asking to replace current data. Corrupt saved data can be downloaded for recovery.
+Comparisons, targets, and language are saved under `miles-master.v1` in localStorage. Data belongs to the current browser and origin. Clearing site data removes it; use Export backup for JSON backups and moving data between localhost and a hosted domain. Export uses schema version 2 with separate flight details. Import validates the file before asking to replace current data and also upgrades version 1 backups. Existing saved browser data is upgraded automatically, preserving the old shared labels on both alternatives. Corrupt saved data can be downloaded for recovery.
 
 Add interface strings to both locale files. Tests check key and placeholder parity. JPY formatting is locale-aware; adding other currencies and conversion is a future feature.
 
