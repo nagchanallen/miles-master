@@ -1,0 +1,470 @@
+:root {
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Noto Sans JP',
+    sans-serif;
+  color: #173c36;
+  background: #f5f6f2;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #f5f6f2;
+}
+.miles-app {
+  color: #173c36;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.miles-app button,
+.miles-app input,
+.miles-app select {
+  font: inherit;
+  touch-action: manipulation;
+}
+.miles-app button {
+  cursor: pointer;
+}
+.miles-app :focus-visible {
+  outline: 3px solid #b87928;
+  outline-offset: 3px;
+}
+.miles-app .topbar {
+  max-width: 1440px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 40px;
+  border-bottom: 1px solid #dce3dc;
+}
+.miles-app .brand {
+  color: #173c36;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.brand-icon {
+  background: #176b57;
+  color: white;
+  border-radius: 9px;
+  padding: 0 10px;
+  font-size: 1.6rem;
+}
+.language select {
+  background: transparent;
+  border: 1px solid #cdd8d1;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+.miles-app main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 42px 40px 60px;
+}
+.eyebrow {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #176b57;
+  text-transform: uppercase;
+}
+.miles-app h1 {
+  font-family: inherit;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  letter-spacing: -1px;
+  line-height: 1.3;
+  margin: 12px 0;
+}
+.intro {
+  color: #63746d;
+  max-width: 800px;
+  margin: 12px 0 28px;
+}
+.settings {
+  background: #eaf0e6;
+  border: 1px solid #d8e2d2;
+  border-radius: 14px;
+  margin: 25px 0 32px;
+  padding: 0 22px;
+}
+.settings summary {
+  cursor: pointer;
+  padding: 18px 0;
+  font-weight: 600;
+}
+.miles-app .ui.form.targets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.optional,
+.hint {
+  color: #63746d;
+  font-weight: 400;
+}
+.hint {
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 225px minmax(0, 1fr);
+  gap: 28px;
+}
+.sidebar {
+  border-right: 1px solid #dce3dc;
+  padding-right: 24px;
+  min-width: 0;
+}
+.sidebar h2 {
+  font:
+    600 0.85rem/1.5 system-ui,
+    sans-serif;
+  margin: 0 0 16px;
+}
+.group-list {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.miles-app .ui.button.group-button {
+  text-align: left;
+  overflow-wrap: anywhere;
+  font-weight: 500;
+  background: transparent;
+  margin: 0;
+  color: #173c36;
+  line-height: 1.5;
+}
+.miles-app .ui.button.group-button.active {
+  background: #e0ecdf;
+  color: #175841;
+}
+.miles-app .add-group {
+  width: 100%;
+}
+.backup {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #dce3dc;
+  display: grid;
+  gap: 8px;
+}
+.backup .ui.button {
+  margin: 0;
+}
+.backup p {
+  margin: 0 0 6px;
+}
+.workspace-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.workspace-top > .ui.form {
+  flex: 1;
+  min-width: 0;
+}
+.miles-app .ui.form input.group-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #cdd8d1;
+  border-radius: 0;
+  padding: 7px 0;
+}
+.actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 305px), 1fr));
+  gap: 20px;
+  align-items: start;
+}
+.miles-app .ui.card.flight-card {
+  border: 1px solid #dce3dc;
+  border-radius: 14px;
+  box-shadow: none;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.miles-app .ui.card.flight-card > .content {
+  padding: 20px;
+}
+.miles-app .flight-card > .card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.option-number {
+  font-size: 0.74rem;
+  letter-spacing: 1.4px;
+  font-weight: 700;
+  color: #63746d;
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.miles-app .ui.form .field {
+  margin: 0;
+  min-width: 0;
+}
+.miles-app .ui.form .field > label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 7px;
+}
+.miles-app .ui.form input,
+.miles-app .ui.form select {
+  width: 100%;
+  min-width: 0;
+  border-radius: 8px;
+  border: 1px solid #cdd8d1;
+  color: #173c36;
+  background: white;
+  padding: 10px;
+  line-height: 1.3;
+  height: 43px;
+}
+.miles-app .ui.form .field.error input {
+  border-color: #b64437;
+  background: #fff3ef;
+}
+.full {
+  grid-column: 1 / -1;
+}
+.section-label {
+  font-size: 0.7rem;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: #63746d;
+  font-weight: 700;
+  margin: 24px 0 14px;
+}
+.fee-toggle {
+  font-size: 0.75rem !important;
+  border: 0;
+  background: transparent;
+  padding: 10px 0;
+  text-decoration: underline;
+  color: #176b57;
+  text-align: left;
+}
+.labels {
+  margin-top: 18px;
+}
+.labels summary {
+  font-size: 0.8rem;
+  color: #63746d;
+  cursor: pointer;
+}
+.labels .field-grid {
+  padding-top: 14px;
+}
+.miles-app .ui.card.flight-card > .result {
+  background: #f0f5ee;
+  border-top: 1px solid #dce7d9;
+}
+.metric-label {
+  font-size: 0.78rem;
+  color: #63746d;
+}
+.value {
+  font-size: 2.3rem;
+  letter-spacing: -1.3px;
+  font-weight: 600;
+  margin: 3px 0 14px;
+  font-variant-numeric: tabular-nums;
+}
+.value small {
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  color: #63746d;
+  font-weight: 400;
+}
+.result-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.8rem;
+  line-height: 1.8;
+}
+.result-row strong {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.recommendation {
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 9px 12px;
+  background: #dcebdc;
+  color: #215a38;
+  margin-top: 15px;
+}
+.recommendation.cash {
+  background: #f3e9d5;
+  color: #79561f;
+}
+.recommendation.neutral {
+  background: #e5e9e5;
+  color: #53635a;
+}
+.formula {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #dce3dc;
+  color: #63746d;
+  font-size: 0.8rem;
+}
+.formula p {
+  margin: 5px 0;
+}
+.empty {
+  border: 1px dashed #b8c9ba;
+  border-radius: 12px;
+  padding: 35px;
+  color: #63746d;
+  text-align: center;
+}
+.footer {
+  margin-top: 30px;
+  color: #63746d;
+  font-size: 0.75rem;
+}
+.status:not(:empty) {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(90vw, 600px);
+  width: max-content;
+  z-index: 20;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (min-width: 1250px) {
+  .cards:has(.flight-card:nth-child(3)) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1100px) {
+  .workspace {
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 20px;
+  }
+  .sidebar {
+    padding-right: 16px;
+  }
+  .workspace-top {
+    flex-wrap: wrap;
+  }
+  .workspace-top > .ui.form {
+    flex-basis: 100%;
+  }
+  .settings .ui.form.targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .miles-app .topbar {
+    padding: 16px 20px;
+    gap: 8px;
+  }
+  .miles-app .brand {
+    font-size: 1.05rem;
+    gap: 6px;
+  }
+  .miles-app main {
+    padding: 28px 20px 40px;
+  }
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #dce3dc;
+    padding: 0 0 20px;
+  }
+  .sidebar h2 {
+    margin-bottom: 10px;
+  }
+  .group-list {
+    display: flex;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  .miles-app .ui.button.group-button {
+    flex-shrink: 0;
+    max-width: 220px;
+  }
+  .backup {
+    margin-top: 14px;
+    padding-top: 12px;
+    grid-template-columns: 1fr 1fr;
+  }
+  .backup p {
+    grid-column: 1 / -1;
+  }
+  .actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .settings {
+    padding: 0 16px;
+  }
+  .miles-app .ui.form.targets {
+    gap: 12px;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+  }
+  .intro {
+    font-size: 0.9rem;
+  }
+  .miles-app .ui.card.flight-card > .content {
+    padding: 18px;
+  }
+  .footer {
+    line-height: 1.7;
+  }
+}
