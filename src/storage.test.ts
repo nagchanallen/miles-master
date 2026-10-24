@@ -4,7 +4,7 @@ import { loadState, saveState, STORAGE_KEY } from './storage';
 
 describe('browser persistence', () => {
   it('starts a new comparison when no saved state exists', () => {
-    expect(loadState()).toMatchObject({ error: null, recovery: null, state: { version: 1 } });
+    expect(loadState()).toMatchObject({ error: null, recovery: null, state: { version: 2 } });
   });
   it('loads valid saved comparisons', () => {
     const state = initialState();

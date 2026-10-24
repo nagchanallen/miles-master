@@ -96,7 +96,7 @@ describe('versioned JSON backups', () => {
       ANA: { domestic: 1.5, international: 2 },
     });
   });
-  it.each(['bad json', 'null', '{}', '{"version":2}'])(
+  it.each(['bad json', 'null', '{}', '{"version":3}'])(
     'rejects malformed or unsupported data',
     (json) => {
       expect(() => parseBackup(json)).toThrow();
@@ -120,7 +120,7 @@ describe('versioned JSON backups', () => {
         s.targets.ANA.international = 0;
       },
       (s: ReturnType<typeof initialState>) => {
-        s.groups[0].options[0].route = 'x'.repeat(301);
+        s.groups[0].options[0].awardFlight.route = 'x'.repeat(301);
       },
       (s: ReturnType<typeof initialState>) => {
         s.groups = [];

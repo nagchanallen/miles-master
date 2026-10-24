@@ -1,5 +1,6 @@
 import { initialState, parseBackup, serializeBackup, type AppState } from './domain/model';
 
+// Keep the original key so existing browser data can be migrated by parseBackup.
 export const STORAGE_KEY = 'miles-master.v1';
 export interface StoredState {
   state: AppState;

@@ -3,15 +3,21 @@ export type Airline = 'JAL' | 'ANA';
 export type Region = 'domestic' | 'international';
 export type Amount = number | '';
 export type Targets = Record<Airline, Record<Region, number>>;
+export interface FlightDetails {
+  route: string;
+  departure: string;
+  returning: string;
+  cabin: string;
+  flightNumbers: string;
+}
 export interface FlightOption {
   id: string;
   airline: Airline;
   region: Region;
   trip: 'one' | 'round';
-  route: string;
-  departure: string;
-  returning: string;
-  cabin: string;
+  cashAirline: Airline | '';
+  cashFlight: FlightDetails;
+  awardFlight: FlightDetails;
   cash: Amount;
   miles: Amount;
   feeMode: 'total' | 'detail';
@@ -26,7 +32,7 @@ export interface Comparison {
   options: FlightOption[];
 }
 export interface AppState {
-  version: 1;
+  version: 2;
   language: Language;
   targets: Targets;
   groups: Comparison[];
@@ -35,16 +41,22 @@ export interface AppState {
 export const MAX_ITEMS = 100;
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 export const newId = () => crypto.randomUUID();
+const newFlightDetails = (): FlightDetails => ({
+  route: '',
+  departure: '',
+  returning: '',
+  cabin: '',
+  flightNumbers: '',
+});
 export function newOption(): FlightOption {
   return {
     id: newId(),
     airline: 'JAL',
     region: 'domestic',
     trip: 'round',
-    route: '',
-    departure: '',
-    returning: '',
-    cabin: '',
+    cashAirline: '',
+    cashFlight: newFlightDetails(),
+    awardFlight: newFlightDetails(),
     cash: '',
     miles: '',
     feeMode: 'total',
@@ -60,7 +72,7 @@ export function newComparison(): Comparison {
 export function initialState(): AppState {
   const group = newComparison();
   return {
-    version: 1,
+    version: 2,
     language: 'ja',
     targets: { JAL: { domestic: 1.5, international: 2 }, ANA: { domestic: 1.5, international: 2 } },
     groups: [group],
@@ -101,7 +113,8 @@ export function calculate(option: FlightOption, target: number) {
         : cash > estimated
           ? 'useMiles'
           : 'useCash';
-  return { fees, miles, cash, estimated, value, recommendation };
+  const difference = cash !== null && estimated !== null ? cash - estimated : null;
+  return { fees, miles, cash, estimated, value, recommendation, difference };
 }
 export function switchFeeMode(option: FlightOption): FlightOption {
   if (option.feeMode === 'detail')
@@ -146,10 +159,20 @@ function price(value: unknown): Amount {
   if (value !== '' && !validAmount(value)) return invalid();
   return value as Amount;
 }
+function flightDetails(value: unknown): FlightDetails {
+  const details = record(value);
+  return {
+    route: text(details.route, 300),
+    departure: text(details.departure, 300),
+    returning: text(details.returning, 300),
+    cabin: text(details.cabin, 300),
+    flightNumbers: text(details.flightNumbers, 300),
+  };
+}
 export function parseBackup(json: string): AppState {
   if (new TextEncoder().encode(json).length > MAX_BACKUP_BYTES) return invalid();
   const raw = record(JSON.parse(json));
-  if (raw.version !== 1) return invalid();
+  if (raw.version !== 1 && raw.version !== 2) return invalid();
   const targetData = record(raw.targets);
   function airlineTargets(airline: Airline): Record<Region, number> {
     const values = record(targetData[airline]);
@@ -166,16 +189,19 @@ export function parseBackup(json: string): AppState {
       name: text(g.name, 200),
       options: list(g.options).map((value) => {
         const o = record(value);
+        // v1 labels described a shared itinerary. Copy them to both sides, but
+        // do not infer the cash airline from the mileage program.
+        const legacyDetails = raw.version === 1 ? { ...o, flightNumbers: '' } : undefined;
         return {
           id: identifier(o.id, usedOptions),
           airline: choice(o.airline, ['JAL', 'ANA'] as const),
           region: choice(o.region, ['domestic', 'international'] as const),
           trip: choice(o.trip, ['one', 'round'] as const),
           feeMode: choice(o.feeMode, ['total', 'detail'] as const),
-          route: text(o.route, 300),
-          departure: text(o.departure, 300),
-          returning: text(o.returning, 300),
-          cabin: text(o.cabin, 300),
+          cashAirline:
+            raw.version === 1 ? ('' as const) : choice(o.cashAirline, ['', 'JAL', 'ANA'] as const),
+          cashFlight: flightDetails(legacyDetails ?? o.cashFlight),
+          awardFlight: flightDetails(legacyDetails ?? o.awardFlight),
           cash: price(o.cash),
           miles: price(o.miles),
           total: price(o.total),
@@ -188,7 +214,7 @@ export function parseBackup(json: string): AppState {
   });
   if (!groups.length || !usedGroups.has(raw.selected as string)) return invalid();
   return {
-    version: 1,
+    version: 2,
     language: choice(raw.language, ['ja', 'en'] as const),
     targets,
     groups,
