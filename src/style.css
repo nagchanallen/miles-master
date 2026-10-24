@@ -452,6 +452,7 @@ body {
 }
 @media (max-width: 700px) {
   .miles-app .topbar {
+    flex-wrap: wrap;
     padding: 16px 20px;
     gap: 8px;
   }
